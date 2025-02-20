@@ -3,15 +3,19 @@ package com.chaan32.FindangBackend.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-@Controller
 @Slf4j
+@Controller
+@RequestMapping("/findang/user")
 public class UserController {
+
     @ResponseBody
-    @GetMapping("/user")
+    @GetMapping
     public String user() {
-        log.info("user controller");
+        log.info("[General] :user controller");
         return "user";
     }
 }
