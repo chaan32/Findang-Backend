@@ -18,9 +18,9 @@ public class UserRestController {
 
     // 회원 가입
     @PostMapping("sign-up")
-    public Optional<User> signUp(@RequestBody UserDTO userDTO){
+    public User signUp(@RequestBody UserDTO userDTO){
         log.info("[ [UserRestController] / [signUp] ] 입력된 userDTO : {}", userDTO);
-        Optional<User> user = userService.saveUser(UserDTO.toEntity(userDTO));
+        User user = userService.saveUser(UserDTO.toEntity(userDTO));
         return user;
     }
 
@@ -44,6 +44,13 @@ public class UserRestController {
     public String getNameByUserId(@RequestBody UserDTO userIdDTO){
         log.info("[ [UserRestController] / [getNameByUserId] ] 입력된 userIdDTO : {}", userIdDTO);
         Optional<User> user = userService.getUser(userIdDTO.getUserId());
-        return user.get().getUserName();
+        return user.map(User::getUserName).orElseGet(
+                ()-> defaultMessage(String.valueOf(userIdDTO.getUserId()))
+        );
+    }
+
+    private String defaultMessage(String userId){
+        log.info("defaultMessage 호출 : {}", userId);
+        return userId + " : 사용자 없음";
     }
 }

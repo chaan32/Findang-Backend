@@ -28,8 +28,8 @@ public class UserService {
      */
 
     // User 저장 (회원 가입)
-    public Optional<User> saveUser (User user) {
-        return Optional.of(userRepository.save(user));
+    public User saveUser (User user) {
+        return userRepository.save(user);
     }
 
     // 로그인 아이디 중복 체크
@@ -40,18 +40,18 @@ public class UserService {
 
     // 로그인
     public Boolean loginProcess(UserDTO userDTO){
-        Optional<User> requestUser = Optional
-                .of(userRepository.findByUserLoginId(userDTO.getUserLoginId()));
-        if(requestUser.isPresent()){
-            return requestUser.get().getUserPassword()
-                    .equals(userDTO.getUserPassword());
+        log.info("[ [UserService] / [loginProcess] ] try to loginID: {}", userDTO.getUserLoginId());
+        Optional<User> byUserLoginId = userRepository.findByUserLoginId(userDTO.getUserLoginId());
+        if(byUserLoginId.isEmpty()){
+            return false;
         }
-        return false;
+        Optional<User> requestUser = userRepository.findByUserLoginIdAndUserPassword(userDTO.getUserLoginId(), userDTO.getUserPassword());
+        return requestUser.isPresent();
     }
 
     // 유저 객체 찾아 오기
     public Optional<User> getUser (Long userId) {
-        return Optional.of(userRepository.findByUserId(userId));
+        return userRepository.findByUserId(userId);
     }
 }
 
