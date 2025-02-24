@@ -20,7 +20,7 @@ public class UserRestController {
     @PostMapping("sign-up")
     public User signUp(@RequestBody UserDTO userDTO){
         log.info("[ [UserRestController] / [signUp] ] 입력된 userDTO : {}", userDTO);
-        User user = userService.saveUser(UserDTO.toEntity(userDTO));
+        User user = userService.saveUser(UserDTO.toEntity(userDTO)); // UserDTO -> User toEntity하는 과정에서 userId 값은 null로 들어가지만, 알아서 채워짐
         return user;
     }
 

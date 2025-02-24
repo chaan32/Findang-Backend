@@ -22,11 +22,30 @@ public enum CTType {
         this.number = number;
     }
 
-    public String getDescription(CTType type) {
-        return type.description;
+    public String getDescription() {
+        return this.description;
     }
 
-    public Integer getNumber(CTType type) {
-        return type.number;
+    public Integer getNumber() {
+        return this.number;
+    }
+
+    public static String getDescriptionByNumber(Integer number) {
+        for (CTType type : CTType.values()) {
+            if (type.getNumber().equals(number)) {
+                return type.getDescription();
+            }
+        }
+        return null; // 해당하는 값이 없으면 null 반환
+    }
+
+    // description을 받아서 number를 찾는 메서드
+    public static Integer getNumberByDescription(String description) {
+        for (CTType type : CTType.values()) {
+            if (type.getDescription().equals(description)) {
+                return type.getNumber();
+            }
+        }
+        return null; // 해당하는 값이 없으면 null 반환
     }
 }

@@ -18,11 +18,30 @@ public enum BSType {
         this.number = number;
     }
 
-    public String getDescription(BSType type) {
-        return type.description;
+    public String getDescription() {
+        return this.description;
     }
 
-    public Integer getNumber(BSType type) {
-        return type.number;
+    public Integer getNumber() {
+        return this.number;
+    }
+
+    public static String getDescriptionByNumber(Integer number) {
+        for (BSType type : BSType.values()) {
+            if (type.getNumber().equals(number)) {
+                return type.getDescription();
+            }
+        }
+        return null; // 해당하는 값이 없으면 null 반환
+    }
+
+    // description을 받아서 number를 찾는 메서드
+    public static Integer getNumberByDescription(String description) {
+        for (BSType type : BSType.values()) {
+            if (type.getDescription().equals(description)) {
+                return type.getNumber();
+            }
+        }
+        return null; // 해당하는 값이 없으면 null 반환
     }
 }

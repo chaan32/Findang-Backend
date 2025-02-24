@@ -1,6 +1,7 @@
 package com.chaan32.FindangBackend.domain;
 
 
+import com.chaan32.FindangBackend.dto.BloodSugarDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,10 +9,10 @@ import java.util.Date;
 
 @Entity
 @Table(name = "blood_sugar")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class BloodSugar {
     @Id
     @Column(name = "blood_sugar_id")
@@ -29,18 +30,27 @@ public class BloodSugar {
     private Integer bloodSugarValue;
 
     //검사 시점
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "check_date", nullable = false)
     private Date checkDate;
 
     //검사 타입 -> 아침 식전, 아침 식후 등
     @Column(name = "check_type", nullable = false)
-    private String checkType;
+    private Integer checkType;
 
     //검사 상태 -> 정상, 과도, 저혈당 등
     @Column(name = "status", nullable = false)
-    private String status;
+    private Integer status;
 
     //생성날짜 (데이터 생성)
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "createAt", nullable = false)
     private Date createAt;
+
+    public void updateBloodSugar(BloodSugarDTO bloodSugarDTO){
+        this.bloodSugarValue = bloodSugarDTO.getBloodSugarValue();
+        this.checkDate = bloodSugarDTO.getCheckDate();
+        this.checkType = bloodSugarDTO.getCheckType();
+        this.status = bloodSugarDTO.getStatus();
+    }
 }

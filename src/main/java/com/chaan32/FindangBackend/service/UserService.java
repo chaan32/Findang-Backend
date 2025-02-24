@@ -19,7 +19,7 @@ public class UserService {
 
     /*
 
-    [필요한 메소드[
+    [필요한 메소드]
     - saveUser : User 저장o
     - overlapCheckLoginId : 로그인 아이디 중복 체크
     - login : 로그인
