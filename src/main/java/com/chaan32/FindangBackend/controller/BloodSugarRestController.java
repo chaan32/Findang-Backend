@@ -29,21 +29,16 @@ public class BloodSugarRestController {
     // 혈당 정보를 입력하기
     @PostMapping("/add")
     public ResponseEntity<Map<String, Object>> addBloodSugarInfo(@RequestBody BloodSugarDTO bloodSugarDTO) throws NotFoundUserException {
-        log.info("[ [BloodSugarRestController] / [AddBloodSugarInfo] ] bloodSugarDTO : {}", bloodSugarDTO);
-        Map<String, Object> response = new HashMap<>();
-
+        printUserLog("AddBloodSugarInfo", bloodSugarDTO.getUserId());
         Optional<User> user = Optional.ofNullable(userService.getUser(bloodSugarDTO.getUserId())
                 .orElseThrow(() -> new NotFoundUserException(bloodSugarDTO.getUserId() + "에 해당하는 유저가 없습니다.")));
 
         BloodSugar bs = BloodSugarDTO.toEntity(bloodSugarDTO, user.get());
-        log.info("[ [BloodSugarRestController] / [addBloodSugarInfo] ] will save BloodSugar : {}", bs);
-        BloodSugar savedBloodSugar = bloodSugarService.saveBloodSugar(bs);
 
-        response.put("user_id", savedBloodSugar.getUser().getUserId());
-        response.put("blood_sugar_id", savedBloodSugar.getBloodSugarId());
-        response.put("blood_sugar_value", savedBloodSugar.getBloodSugarValue());
-        response.put("status description", BSType.getDescriptionByNumber(savedBloodSugar.getStatus()));
-        response.put("status ", savedBloodSugar.getStatus());
+        log.info("[ [BloodSugarRestController] / [AddBloodSugarInfo] ] will save BloodSugar : {}", bs);
+
+        Map<String, Object> response = getResponseMap(bloodSugarService.saveBloodSugar(bs));
+
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     // 혈당 정보를 수정하기
@@ -52,12 +47,7 @@ public class BloodSugarRestController {
         log.info("[ [BloodSugarRestController] / [UpdateBloodSugarInfo] ] bloodSugarDTO : {}", bloodSugarDTO);
         BloodSugar bloodSugar = bloodSugarService.editBloodSugar(bloodSugarDTO);
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("user_id", bloodSugar.getUser().getUserId());
-        response.put("blood_sugar_id", bloodSugar.getBloodSugarId());
-        response.put("blood_sugar_value", bloodSugar.getBloodSugarValue());
-        response.put("status description", BSType.getDescriptionByNumber(bloodSugar.getStatus()));
-        response.put("status ", bloodSugar.getStatus());
+        Map<String, Object> response = getResponseMap(bloodSugar);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -81,52 +71,65 @@ public class BloodSugarRestController {
         log.info("[ [BloodSugarRestController] / [GetAllBloodSugarInfo] ]");
         List<BloodSugar> allBloodSugar = bloodSugarService.getAllBloodSugar();
 
-        List<BloodSugarResponseDTO> DTOList = new ArrayList<>();
-        for (BloodSugar bloodSugar : allBloodSugar) {
-            DTOList.add(new BloodSugarResponseDTO(bloodSugar));
-        }
+        List<BloodSugarResponseDTO> DTOList = getBSResponseDTOList(allBloodSugar);
+        printSizeLog("GetAllBloodSugarInfo", DTOList.size());
 
         return ResponseEntity.ok(DTOList);
     }
     // 특정 사람의 모든 혈당 정보
     @GetMapping("/user/all")
     public ResponseEntity<List<BloodSugarResponseDTO>> getBloodSugarInfoByUser(@RequestBody BloodSugarSearchDTO bsSearchDTO) {
-        log.info("[ [BloodSugarRestController] / [GetBloodSugarInfoByUser] ] user_id : {}", bsSearchDTO.getUserId());
+        printUserLog("GetBloodSugarInfoByUser", bsSearchDTO.getUserId());
         List<BloodSugar> bloodSugarByUser = bloodSugarService.getBloodSugarByUserId(bsSearchDTO.getUserId());
-
-        List<BloodSugarResponseDTO> DTOList = new ArrayList<>();
-        for (BloodSugar bloodSugar : bloodSugarByUser) {
-            DTOList.add(new BloodSugarResponseDTO(bloodSugar));
-        }
+        List<BloodSugarResponseDTO> DTOList = getBSResponseDTOList(bloodSugarByUser);
+        printSizeLog("GetBloodSugarInfoByUser", DTOList.size());
 
         return ResponseEntity.ok(DTOList);
     }
     // 특정 사람의 혈당 정보를 가져오기 (특정 날짜)
     @GetMapping("/user/date")
     public ResponseEntity<List<BloodSugarResponseDTO>>  getBloodSugarInfoByDate(@RequestBody BloodSugarSearchDTO bsSearchDTO) {
-        log.info("[ [BloodSugarRestController] / [GetBloodSugarInfoByDate] ] user_id : {}, specific date : {}",
-                bsSearchDTO.getUserId(), bsSearchDTO.getSpecificDate());
-
+        printUserLog("GetBloodSugarInfoByDate", bsSearchDTO.getUserId());
         List<BloodSugar> bloodSugarBySpecificDate =
                 bloodSugarService.getBloodSugarBySpecificDate(bsSearchDTO.getUserId(), bsSearchDTO.getSpecificDate());
-
-        List<BloodSugarResponseDTO> DTOList = new ArrayList<>();
-        for (BloodSugar bloodSugar : bloodSugarBySpecificDate) {
-            DTOList.add(new BloodSugarResponseDTO(bloodSugar));
-        }
+        List<BloodSugarResponseDTO> DTOList = getBSResponseDTOList(bloodSugarBySpecificDate);
+        printSizeLog("GetBloodSugarInfoByDate", DTOList.size());
         return ResponseEntity.ok(DTOList);
     }
     // 특정 사람의 혈당 정보를 가져오기 (특정 기간)
     @GetMapping("/user/range")
     public ResponseEntity<List<BloodSugarResponseDTO>>  getBloodSugarInfoByRange(@RequestBody BloodSugarSearchDTO bsSearchDTO) {
-        log.info("[ [BloodSugarRestController] / [GetBloodSugarInfoByRange] ] user_id : {}, search date  : {} ~ {}",
-                bsSearchDTO.getUserId(), bsSearchDTO.getStartDate(), bsSearchDTO.getEndDate());
+        printUserLog("GetBloodSugarInfoByRange", bsSearchDTO.getUserId());
+        List<BloodSugar> bloodSugarByRange = bloodSugarService
+                .getBloodSugarByDateRange(bsSearchDTO.getUserId(), bsSearchDTO.getStartDate(), bsSearchDTO.getEndDate());
+        List<BloodSugarResponseDTO> DTOList = getBSResponseDTOList(bloodSugarByRange);
+        printSizeLog("GetBloodSugarInfoByRange", DTOList.size());
+        return ResponseEntity.ok(DTOList);
+    }
 
+    private Map<String, Object> getResponseMap(BloodSugar bloodSugar) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("user_id", bloodSugar.getUser().getUserId());
+        response.put("blood_sugar_id", bloodSugar.getBloodSugarId());
+        response.put("blood_sugar_value", bloodSugar.getBloodSugarValue());
+        response.put("status description", BSType.getDescriptionByNumber(bloodSugar.getStatus()));
+        response.put("status ", bloodSugar.getStatus());
+        return response;
+    }
+    private List<BloodSugarResponseDTO> getBSResponseDTOList(List<BloodSugar> bloodSugarList) {
         List<BloodSugarResponseDTO> DTOList = new ArrayList<>();
-        List<BloodSugar> bloodSugarByRange = bloodSugarService.getBloodSugarByDateRange(bsSearchDTO.getUserId(), bsSearchDTO.getStartDate(), bsSearchDTO.getEndDate());
-        for (BloodSugar bloodSugar : bloodSugarByRange) {
+        for (BloodSugar bloodSugar : bloodSugarList) {
             DTOList.add(new BloodSugarResponseDTO(bloodSugar));
         }
-        return ResponseEntity.ok(DTOList);
+        return DTOList;
+    }
+    private void printUserLog(String methodName, Long userId){
+        log.info("[ [BloodSugarRestController] / [{}] ] user_id : {}", methodName, userId);
+    }
+    private void printBSLog(String methodName, Long bloodSugarId){
+        log.info("[ [BloodSugarRestController] / [{}] ] blood_sugar_id : {}", methodName, bloodSugarId);
+    }
+    private void printSizeLog(String methodName, int size){
+        log.info("[ [BloodSugarRestController] / [{}] ] size : {}", methodName, size);
     }
 }

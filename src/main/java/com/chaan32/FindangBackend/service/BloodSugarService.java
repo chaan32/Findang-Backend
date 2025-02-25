@@ -88,8 +88,10 @@ public class BloodSugarService {
         Date endDate = getOneDayPlusDate(specificDate);
         log.info("[ [BloodSugarService] / [getBloodSugarBySpecificDate] ] specificDate : {} ~ {}",
                 dateFormat.format(startDate), dateFormat.format(endDate) );
+
         return bloodSugarRepository.findByUser_UserIdAndCheckDateBetween(userId, startDate, endDate);
     }
+
     // 특정 사람의 혈당 데이터 다 조회하기
     public List<BloodSugar> getBloodSugarByUserId(Long userId){
         log.info("[ [BloodSugarService] / [getBloodSugarByUserId] ]");
@@ -98,8 +100,6 @@ public class BloodSugarService {
 
     // 특정 사람의 날짜 범위의 혈당 정보 조회하기
     public List<BloodSugar> getBloodSugarByDateRange(Long userId, Date startDate, Date endDate){
-        log.info("[ [BloodSugarService] / [getBloodSugarByDateRange] ] {} ~ {}", startDate, endDate);
-
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(endDate);
         calendar.set(Calendar.HOUR_OF_DAY, 23);
@@ -107,6 +107,9 @@ public class BloodSugarService {
         calendar.set(Calendar.SECOND, 59);
 
         endDate = calendar.getTime(); // 하루 전날 23:59:59
+
+        log.info("[ [BloodSugarService] / [getBloodSugarByDateRange] ] range : {} ~ {}",
+                dateFormat.format(startDate), dateFormat.format(endDate));
 
         return bloodSugarRepository.findByUser_UserIdAndCheckDateBetween(userId, startDate, endDate);
     }
