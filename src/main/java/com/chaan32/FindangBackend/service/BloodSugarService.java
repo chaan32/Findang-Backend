@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +22,7 @@ import java.util.List;
 @Transactional
 public class BloodSugarService {
     private final BloodSugarRepository bloodSugarRepository;
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     // 혈당 정보를 입력하기
     public BloodSugar saveBloodSugar(BloodSugar bloodSugar){
@@ -75,14 +78,16 @@ public class BloodSugarService {
 
     // 특정 사람의 특정 날짜의 혈당 정보 조회하기
     public List<BloodSugar> getBloodSugarBySpecificDate(Long userId, Date specificDate){
-        log.info("[ [BloodSugarService] / [getBloodSugarBySpecificDate] ]");
+        /*
+            [예시]
+            specific Date : 2025-03-01
+            startDate : 2025-03-01 00:00:00
+            endDate : 2025-03-02 00:00:00
+         */
         Date startDate = specificDate;
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(startDate);
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-        Date endDate = calendar.getTime(); // 다음 날 00:00:00
-
+        Date endDate = getOneDayPlusDate(specificDate);
+        log.info("[ [BloodSugarService] / [getBloodSugarBySpecificDate] ] specificDate : {} ~ {}",
+                dateFormat.format(startDate), dateFormat.format(endDate) );
         return bloodSugarRepository.findByUser_UserIdAndCheckDateBetween(userId, startDate, endDate);
     }
     // 특정 사람의 혈당 데이터 다 조회하기
@@ -105,8 +110,14 @@ public class BloodSugarService {
 
         return bloodSugarRepository.findByUser_UserIdAndCheckDateBetween(userId, startDate, endDate);
     }
-    /*
-    2/25 해야할 일
-    1. date 이거 이해하기
-     */
+    private Date getOneDayPlusDate(Date date){
+        // 하루 더해주고 +1 00:00:00
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+        // 1초 빼기 23:59:59
+        Instant instant = calendar.getTime().toInstant().minusSeconds(1);
+        return Date.from(instant);
+    }
 }
