@@ -5,6 +5,8 @@ import com.chaan32.FindangBackend.dto.BloodSugarDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity
@@ -47,10 +49,16 @@ public class BloodSugar {
     @Column(name = "createAt", nullable = false)
     private Date createAt;
 
+    //수정 날짜 (데이터 수정)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updateAt")
+    private Date updateAt;
+
     public void updateBloodSugar(BloodSugarDTO bloodSugarDTO){
         this.bloodSugarValue = bloodSugarDTO.getBloodSugarValue();
         this.checkDate = bloodSugarDTO.getCheckDate();
         this.checkType = bloodSugarDTO.getCheckType();
         this.status = bloodSugarDTO.getStatus();
+        this.updateAt = Date.from(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toInstant());
     }
 }
