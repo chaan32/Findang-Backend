@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
-
 import java.util.Date;
 
 @Data
@@ -19,7 +18,6 @@ public class BloodSugarSearchDTO {
     @JsonProperty("start_date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private Date startDate;
-
 
     @Temporal(TemporalType.DATE)
     @JsonProperty("end_date")

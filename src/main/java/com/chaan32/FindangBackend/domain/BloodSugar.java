@@ -54,11 +54,12 @@ public class BloodSugar {
     @Column(name = "updateAt")
     private Date updateAt;
 
-    public void updateBloodSugar(BloodSugarDTO bloodSugarDTO){
+    public BloodSugar updateBloodSugar(BloodSugarDTO bloodSugarDTO){
         this.bloodSugarValue = bloodSugarDTO.getBloodSugarValue();
         this.checkDate = bloodSugarDTO.getCheckDate();
         this.checkType = bloodSugarDTO.getCheckType();
         this.status = bloodSugarDTO.getStatus();
         this.updateAt = Date.from(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toInstant());
+        return this;
     }
 }

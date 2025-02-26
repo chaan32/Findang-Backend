@@ -1,16 +1,19 @@
 package com.chaan32.FindangBackend.domain;
 
+import com.chaan32.FindangBackend.dto.ReservationDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 @Entity
 @Table(name = "reservation")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Reservation {
     /*
     예약에 대한 클래스
@@ -52,6 +55,27 @@ public class Reservation {
     private Integer inspectionItem03;
 
     //검사 유무
-    @Column(name = "inspection_status", nullable = false)
-    private String inspectionStatus;
+    @Column(name = "status", nullable = false)
+    private Boolean status;
+
+    //생성날짜 (데이터 생성) -> DTO에서 build 할 때 생성
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "createAt", nullable = false)
+    private Date createAt;
+
+    //수정 날짜 (데이터 수정)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "updateAt")
+    private Date updateAt;
+
+    public Reservation updateReservation(ReservationDTO reservationDTO){
+        this.reservationDate = reservationDTO.getReservationDate();
+        this.inspectionItem01 = reservationDTO.getInspectionItem01();
+        this.inspectionItem02 = reservationDTO.getInspectionItem02();
+        this.inspectionItem03 = reservationDTO.getInspectionItem03();
+        this.updateAt = Date.from(ZonedDateTime.now(ZoneId.of("Asia/Seoul")).toInstant());
+        return this;
+    }
+
+
 }
