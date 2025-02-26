@@ -37,8 +37,6 @@ public class InspectionRecord {
     private Reservation reservation;
 
 
-
-
     //검사 날짜
     @Column(name = "inspection_date", nullable = false)
     private String inspectionDate;

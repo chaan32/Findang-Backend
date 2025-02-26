@@ -55,9 +55,7 @@ public class BloodSugarService {
         BloodSugar targetBS = bloodSugarRepository.findById(bloodSugarDTO.getBloodSugarId())
                 .orElseThrow(() -> new NotFoundBloodSugarException(bloodSugarDTO.getBloodSugarId() + "에 해당하는 혈당 정보가 없습니다."));
 
-        targetBS.updateBloodSugar(bloodSugarDTO);
-
-        return targetBS;
+        return targetBS.updateBloodSugar(bloodSugarDTO);
     }
 
     // 혈당 정보를 삭제하기
