@@ -1,5 +1,6 @@
 package com.chaan32.FindangBackend.service;
 
+import com.chaan32.FindangBackend.domain.InspectionRecord;
 import com.chaan32.FindangBackend.domain.Reservation;
 import com.chaan32.FindangBackend.dto.ReservationDTO;
 import com.chaan32.FindangBackend.exception.NotFoundReservationException;
@@ -67,5 +68,14 @@ public class ReservationService {
     //특정 유저의 예약 정보 반환
     public List<Reservation> getReservationInfoByUser(Long userId){
         return reservationRepository.findByUser_UserId(userId);
+    }
+
+    public Optional<Reservation> getReservationById(Long reservationId) {
+        return reservationRepository.findById(reservationId);
+    }
+
+    public Reservation updateInspectionRecord(Reservation reservation, InspectionRecord inspectionRecord){
+        reservation.setInspectionRecord(inspectionRecord);
+        return reservation;
     }
 }
